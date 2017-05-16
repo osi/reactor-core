@@ -192,13 +192,10 @@ final class FluxWindowTimeOrSize<T> extends FluxBatch<T, Flux<T>> {
 		}
 
 		@Override
-		public Object scan(Attr key) {
-			switch (key) {
-				case CANCELLED:
-					return cancelled == 1;
-				default:
-					return super.scan(key);
-			}
+		public Object scanUnsafe(Attr key) {
+			if (key == BooleanAttr.CANCELLED) return cancelled == 1;
+
+			return super.scanUnsafe(key);
 		}
 	}
 }

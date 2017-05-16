@@ -124,22 +124,15 @@ abstract class FluxBatch<T, V> extends FluxSource<T, V> {
 
 
 		@Override
-		public Object scan(Attr key) {
-			switch (key) {
-				case PARENT:
-					return subscription;
-				case CANCELLED:
-					return terminated == TERMINATED_WITH_CANCEL;
-				case TERMINATED:
-					return terminated == TERMINATED_WITH_ERROR || terminated == TERMINATED_WITH_SUCCESS;
-				case REQUESTED_FROM_DOWNSTREAM:
-					return requested;
-				case CAPACITY:
-					return batchSize;
-				case BUFFERED:
-					return batchSize - index;
-			}
-			return InnerOperator.super.scan(key);
+		public Object scanUnsafe(Attr key) {
+			if (key == ScannableAttr.PARENT) return subscription;
+			if (key == BooleanAttr.CANCELLED) return terminated == TERMINATED_WITH_CANCEL;
+			if (key == BooleanAttr.TERMINATED) return terminated == TERMINATED_WITH_ERROR || terminated == TERMINATED_WITH_SUCCESS;
+			if (key == LongAttr.REQUESTED_FROM_DOWNSTREAM) return requested;
+			if (key == IntAttr.CAPACITY) return batchSize;
+			if (key == IntAttr.BUFFERED) return batchSize - index;
+
+			return InnerOperator.super.scanUnsafe(key);
 		}
 
 		void nextCallback(T event) {
