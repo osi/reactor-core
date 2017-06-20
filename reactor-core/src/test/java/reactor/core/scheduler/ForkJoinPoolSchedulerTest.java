@@ -34,7 +34,7 @@ public class ForkJoinPoolSchedulerTest extends AbstractSchedulerTest {
 
 	@Override
 	protected Scheduler scheduler() {
-		return Schedulers.forkJoinPool();
+		return Schedulers.newForkJoinPool("test");
 	}
 
 	@Override

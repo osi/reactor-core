@@ -299,13 +299,21 @@ final class ForkJoinPoolScheduler implements Scheduler {
 		}
 
 		private void execute(Runnable command) {
+			boolean schedule;
 			synchronized (lock) {
 				tasks.add(command);
 
-				if (!executing) {
-					executor.execute(this::execute);
-					executing = true;
+				if (executing) {
+					schedule = false;
 				}
+				else {
+					executing = true;
+					schedule = true;
+				}
+			}
+
+			if(schedule) {
+				executor.execute(this::execute);
 			}
 		}
 
